@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(amb.root) //A tela vai ser renderizada pela view raiz
-        fillContacts()
         amb.contatosLv.adapter = contactAdapter
 
         //instancia o carl
@@ -64,14 +63,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fillContacts(){
+   /* private fun fillContacts(){
         for(i in 1..50){
             contactList.add(
                 Contact(i,"Nome $i","Endereço $i", "Telefone $i","Email $i")
             )
         }
 
-    }
+    } */
 
 
 }
