@@ -18,6 +18,10 @@ class ContactActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(acb.root)
+
+        setSupportActionBar(acb.toolbarIn.toolbar)
+        supportActionBar?.subtitle = "Contact details"
+
         with(acb){
             saveBt.setOnClickListener {
                 val contact: Contact = Contact(
