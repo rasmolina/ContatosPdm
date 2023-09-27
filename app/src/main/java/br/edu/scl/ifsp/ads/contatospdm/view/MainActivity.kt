@@ -10,6 +10,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import br.edu.scl.ifsp.ads.contatospdm.R
+import br.edu.scl.ifsp.ads.contatospdm.adapter.ContactAdapter
 import br.edu.scl.ifsp.ads.contatospdm.databinding.ActivityMainBinding
 import br.edu.scl.ifsp.ads.contatospdm.model.Constant.EXTRA_CONTACT
 import br.edu.scl.ifsp.ads.contatospdm.model.Contact
@@ -24,8 +25,15 @@ class MainActivity : AppCompatActivity() {
     private val contactList: MutableList<Contact> = mutableListOf()
 
     //Adapter
+    /*
     private val contactAdapter: ArrayAdapter<String> by lazy {
-        ArrayAdapter(this,android.R.layout.simple_list_item_1,contactList.map { contact -> contact.name })
+        ArrayAdapter(this,android.R.layout.simple_list_item_1,contactList.map { contact -> contact.name})
+    } */
+
+    private val contactAdapter: ContactAdapter by lazy {
+        ContactAdapter(
+            this,
+            contactList)
     }
 
     private lateinit var carl:ActivityResultLauncher<Intent>
@@ -44,7 +52,6 @@ class MainActivity : AppCompatActivity() {
              val contact = result.data?.getParcelableExtra<Contact>(EXTRA_CONTACT)
             contact?.let{ _contact ->
                 contactList.add(_contact)
-                contactAdapter.add(_contact.name)
                 contactAdapter.notifyDataSetChanged()
             }
          }
