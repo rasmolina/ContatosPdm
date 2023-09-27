@@ -35,7 +35,7 @@ class ContactAdapter(context: Context,
         }
 
         (contactTileView.tag as TileContactHolder).nameTv.setText(contact.name)
-        (contactTileView.tag as TileContactHolder).emailTv.setText(contact.emails)
+        (contactTileView.tag as TileContactHolder).emailTv.setText(contact.email)
 
         //preenche com os dados na célula
         //!! força a chamada porque não precisa verificar se é nulo

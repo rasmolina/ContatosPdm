@@ -22,10 +22,22 @@ class ContactActivity : AppCompatActivity() {
         setSupportActionBar(acb.toolbarIn.toolbar)
         supportActionBar?.subtitle = "Contact details"
 
+        val receivedContact = intent.getParcelableExtra<Contact>(EXTRA_CONTACT)
+        receivedContact?.let {_receivedContact ->
+            with(acb){
+                nameEt.setText(_receivedContact.name)
+                addressEt.setText(_receivedContact.adress)
+                phoneEt.setText(_receivedContact.phone)
+                emailEt.setText(_receivedContact.email)
+            }
+
+        }
+
         with(acb){
             saveBt.setOnClickListener {
                 val contact: Contact = Contact(
-                    id=generateId(),nameEt.text.toString(),
+                    id = receivedContact?.id?:generateId(),
+                    nameEt.text.toString(),
                     addressEt.text.toString(),
                     phoneEt.text.toString(),
                     emailEt.text.toString()

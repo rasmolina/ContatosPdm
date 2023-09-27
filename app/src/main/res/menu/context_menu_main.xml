@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/removeContactMi"
+        android:title="@string/remover_contato"
+        />
+
+    <item
+        android:id="@+id/editContactMi"
+        android:title="@string/editar_contato"
+        />
+
+</menu>
