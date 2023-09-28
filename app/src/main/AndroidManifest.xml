@@ -16,6 +16,10 @@
             android:name=".view.ContactActivity"
             android:exported="false" />
         <activity
+            android:name=".view.SearchActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>

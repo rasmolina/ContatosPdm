@@ -7,4 +7,10 @@
     android:title="@string/add_contact"
     app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/clearFilterMi"
+        android:title="Limpar Filtro"
+        app:showAsAction="ifRoom"
+        />
+
 </menu>

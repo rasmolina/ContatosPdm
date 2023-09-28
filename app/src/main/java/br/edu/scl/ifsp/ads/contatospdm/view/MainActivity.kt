@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     //Lista mutável análogo array Java - Data Source
     private val contactList: MutableList<Contact> = mutableListOf()
 
+    private val originalContactList: MutableList<Contact> = mutableListOf()
+
     //Adapter
     /*
     private val contactAdapter: ArrayAdapter<String> by lazy {
@@ -43,6 +45,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var carl:ActivityResultLauncher<Intent>
 
+    private lateinit var searchContactLauncher: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(amb.root) //A tela vai ser renderizada pela view raiz
@@ -51,6 +55,8 @@ class MainActivity : AppCompatActivity() {
 
         amb.contatosLv.adapter = contactAdapter
         fillContacts()
+        originalContactList.addAll(contactList)
+
         //instancia o carl
         carl = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
          result -> if(result.resultCode == RESULT_OK) {
@@ -67,8 +73,27 @@ class MainActivity : AppCompatActivity() {
          }
         }
 
+        searchContactLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val query = result.data?.getStringExtra("query")
+                if (!query.isNullOrBlank()) {
+                    performSearch(query)
+                }else{
+                    Toast.makeText(this, "Valor nulo ou em branco!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         registerForContextMenu(amb.contatosLv)
     }
+
+    private fun performSearch(query: String) {
+        val filteredContacts = originalContactList.filter { it.name.contains(query, ignoreCase = true) }
+        contactAdapter.clear()
+        contactAdapter.addAll(filteredContacts)
+        contactAdapter.notifyDataSetChanged()
+    }
+
 
     //Cria o menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -82,7 +107,11 @@ class MainActivity : AppCompatActivity() {
                 //Abrir a tela para adicionar um novo contato (ContactActivity)
                 carl.launch(Intent(this,ContactActivity::class.java))
                 true
-            } else -> false
+            }
+            R.id.clearFilterMi -> {
+                clearFilter()
+                true
+            }else -> false
         }
     }
 
@@ -108,10 +137,21 @@ class MainActivity : AppCompatActivity() {
                 editContactIntent.putExtra(EXTRA_CONTACT,contact)
                 carl.launch(editContactIntent)
                 true}
+            R.id.searchContactMi -> {
+                val searchIntent = Intent(this, SearchActivity::class.java)
+                searchContactLauncher.launch(searchIntent)
+                true
+            }
             else -> {false}
         }
     }
 
+    private fun clearFilter() {
+        // Restaura a lista de contatos original
+        contactAdapter.clear()
+        contactAdapter.addAll(originalContactList)
+        contactAdapter.notifyDataSetChanged()
+    }
    private fun fillContacts(){
         for(i in 1..50){
             contactList.add(
