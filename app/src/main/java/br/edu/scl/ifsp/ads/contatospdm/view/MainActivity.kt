@@ -8,7 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Adapter
+import android.widget.AdapterView
 import android.widget.AdapterView.AdapterContextMenuInfo
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -16,8 +18,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import br.edu.scl.ifsp.ads.contatospdm.R
 import br.edu.scl.ifsp.ads.contatospdm.adapter.ContactAdapter
+import br.edu.scl.ifsp.ads.contatospdm.controller.ContactController
 import br.edu.scl.ifsp.ads.contatospdm.databinding.ActivityMainBinding
 import br.edu.scl.ifsp.ads.contatospdm.model.Constant.EXTRA_CONTACT
+import br.edu.scl.ifsp.ads.contatospdm.model.Constant.VIEW_CONTACT
 import br.edu.scl.ifsp.ads.contatospdm.model.Contact
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +31,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Lista mutável análogo array Java - Data Source
-    private val contactList: MutableList<Contact> = mutableListOf()
+    private val contactList: MutableList<Contact> by lazy {
+        contactController.getContacts() //busca os contatos no BD
+    }
+
+    //Controller para quem faz as chamadas no BD
+    private val contactController: ContactController by lazy {
+        ContactController(this)
+    }
 
     private val originalContactList: MutableList<Contact> = mutableListOf()
 
@@ -54,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(amb.toolbarIn.toolbar)
 
         amb.contatosLv.adapter = contactAdapter
-        fillContacts()
+        //fillContacts()
         originalContactList.addAll(contactList)
 
         //instancia o carl
@@ -65,9 +76,20 @@ class MainActivity : AppCompatActivity() {
                 if(contactList.any {it.id == _contact.id}){
                     val position = contactList.indexOfFirst { it.id == _contact.id}
                     contactList[position] = _contact
+                    contactList.sortBy { it.name }
+                    contactController.editContact(_contact)
                 }else {
-                    contactList.add(_contact)
+                    val newId = contactController.insertContact(_contact)
+                    val newContact = Contact (
+                        newId,
+                        _contact.name,
+                        _contact.adress,
+                        _contact.phone,
+                        _contact.email
+                    )
+                    contactList.add(newContact)
                 }
+                contactList.sortBy { it.name }
                 contactAdapter.notifyDataSetChanged()
             }
          }
@@ -83,6 +105,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        amb.contatosLv.setOnItemClickListener{ parent, view, position, id ->
+            val contact = contactList[position]
+            val viewContactIntent  = Intent(this,ContactActivity::class.java)
+            viewContactIntent.putExtra(EXTRA_CONTACT, contact)
+            viewContactIntent.putExtra(VIEW_CONTACT,true)
+            startActivity(viewContactIntent)
+
+        }
+
+
+
 
         registerForContextMenu(amb.contatosLv)
     }
