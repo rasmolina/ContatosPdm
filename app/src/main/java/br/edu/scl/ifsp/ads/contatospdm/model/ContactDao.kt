@@ -10,5 +10,5 @@ interface ContactDao {
 
     fun updateContact(contact: Contact): Int
 
-    fun deleteContact(contact: Contact): Int
+    fun deleteContact(id: Int): Int
 }

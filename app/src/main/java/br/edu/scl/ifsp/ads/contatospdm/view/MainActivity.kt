@@ -159,8 +159,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val position = (item.menuInfo as AdapterContextMenuInfo).position
+
+        val contact = contactList[position]
+
         return when(item.itemId){
             R.id.removeContactMi -> {
+                contactController.removeContact(contact.id)
                 contactList.removeAt(position)
                 contactAdapter.notifyDataSetChanged()
                 Toast.makeText(this, "Contact removed!", Toast.LENGTH_SHORT).show()
