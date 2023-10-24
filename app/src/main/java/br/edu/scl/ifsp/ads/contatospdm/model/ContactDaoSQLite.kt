@@ -72,10 +72,10 @@ class ContactDaoSlite (context: Context): ContactDao {
         arrayOf(contact.id.toString())
         )
 
-    override fun deleteContact(contact: Contact) = contactsSqliteDatabase.delete(
+    override fun deleteContact(id: Int) = contactsSqliteDatabase.delete(
         CONTACT_TABLE,
         "$ID_COLUMN = ?",
-        arrayOf(contact.id.toString())
+        arrayOf(id.toString())
     )
 
     private fun Cursor.rowToContact() = Contact(
