@@ -49,7 +49,7 @@ class ContactActivity : AppCompatActivity() {
         with(acb){
             saveBt.setOnClickListener {
                 val contact: Contact = Contact(
-                    id = receivedContact?.id?: INVALID_CONTACT_ID,
+                    id = receivedContact?.id,
                     nameEt.text.toString(),
                     addressEt.text.toString(),
                     phoneEt.text.toString(),
