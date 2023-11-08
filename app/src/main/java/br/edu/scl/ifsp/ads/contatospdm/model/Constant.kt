@@ -6,4 +6,6 @@ object Constant {
     const val VIEW_CONTACT = "VIEW_CONTACT"
 
     const val INVALID_CONTACT_ID = -1
+
+    const val CONTACT_ARRAY = "CONTACT_ARRAY"
 }
