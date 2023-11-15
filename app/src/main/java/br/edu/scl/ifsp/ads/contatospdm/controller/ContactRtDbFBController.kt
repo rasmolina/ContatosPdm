@@ -1,28 +1,17 @@
 package br.edu.scl.ifsp.ads.contatospdm.controller
 
-import android.os.AsyncTask
-import android.os.Message
-import androidx.room.Room
-import br.edu.scl.ifsp.ads.contatospdm.model.Constant.CONTACT_ARRAY
+import br.edu.scl.ifsp.ads.contatospdm.model.Constant
 import br.edu.scl.ifsp.ads.contatospdm.model.Contact
-import br.edu.scl.ifsp.ads.contatospdm.model.ContactRoomDao
-import br.edu.scl.ifsp.ads.contatospdm.model.ContactRoomDao.Companion.CONTACT_DATABASE_FILE
-import br.edu.scl.ifsp.ads.contatospdm.model.ContactRoomDaoDatabase
+import br.edu.scl.ifsp.ads.contatospdm.model.ContactDao
+import br.edu.scl.ifsp.ads.contatospdm.model.ContactDaoRtDbFb
 import br.edu.scl.ifsp.ads.contatospdm.view.MainActivity
 
-class ContactRoomController(private val mainActivity: MainActivity) {
-    private val contactDaoImpl: ContactRoomDao by lazy {
-        Room.databaseBuilder(
-            mainActivity,
-            ContactRoomDaoDatabase::class.java,
-            CONTACT_DATABASE_FILE
-        ).build().getContactRoomDao()
-    }
+class ContactRtDbFBController (private val mainActivity: MainActivity) {
+    private val contactDaoImpl: ContactDao = ContactDaoRtDbFb()
 
     fun insertContact(contact: Contact) {
         Thread {
             contactDaoImpl.createContact(contact)
-            getContacts()
         }.start()
     }
 
@@ -34,7 +23,7 @@ class ContactRoomController(private val mainActivity: MainActivity) {
                 sendMessage(
                     obtainMessage().apply {
                         data.putParcelableArray(
-                            CONTACT_ARRAY,
+                            Constant.CONTACT_ARRAY,
                             contactDaoImpl.retrieveContacts().toTypedArray()
                         )
                     }
@@ -43,7 +32,6 @@ class ContactRoomController(private val mainActivity: MainActivity) {
         }.start()
     }
 
-    
 
     fun editContact(contact: Contact){
         Thread {
@@ -54,7 +42,7 @@ class ContactRoomController(private val mainActivity: MainActivity) {
 
     fun removeContact(contact: Contact){
         Thread {
-            contactDaoImpl.deleteContact(contact)
+            contactDaoImpl.deleteContact(contact.id!!)
             getContacts()
         }.start()
     }

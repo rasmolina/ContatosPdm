@@ -23,6 +23,7 @@ import br.edu.scl.ifsp.ads.contatospdm.R
 import br.edu.scl.ifsp.ads.contatospdm.adapter.ContactAdapter
 import br.edu.scl.ifsp.ads.contatospdm.controller.ContactController
 import br.edu.scl.ifsp.ads.contatospdm.controller.ContactRoomController
+import br.edu.scl.ifsp.ads.contatospdm.controller.ContactRtDbFBController
 import br.edu.scl.ifsp.ads.contatospdm.databinding.ActivityMainBinding
 import br.edu.scl.ifsp.ads.contatospdm.model.Constant.CONTACT_ARRAY
 import br.edu.scl.ifsp.ads.contatospdm.model.Constant.EXTRA_CONTACT
@@ -39,8 +40,8 @@ class MainActivity : AppCompatActivity() {
     private val contactList: MutableList<Contact> = mutableListOf()
 
     //Controller para quem faz as chamadas no BD
-    private val contactController: ContactRoomController by lazy {
-        ContactRoomController(this)
+    private val contactController: ContactRtDbFBController by lazy {
+        ContactRtDbFBController(this)
     }
 
     private val originalContactList: MutableList<Contact> = mutableListOf()
@@ -57,18 +58,31 @@ class MainActivity : AppCompatActivity() {
             contactList)
     }
 
+    companion object {
+        const val GET_CONTACTS_MSG = 1
+        const val GET_CONTACTS_INTERVAL = 2000L //milissegundos
+    }
+
+    //Handler
     val updateContactListHandler = object : Handler(Looper.getMainLooper()){
         override fun handleMessage(msg: Message){
            super.handleMessage(msg)
-            msg.data.getParcelableArray(CONTACT_ARRAY)?.also { contactArray ->
-                contactList.clear()
-                contactArray.forEach {
-                    contactList.add(it as Contact)
+
+            //Busca os contatos ou atualiza a lista de acordo com o tipo da mensagem
+            if(msg.what == GET_CONTACTS_MSG){
+                //Busca os contatos de acordo com o intervalo pre-definido e agenda nova busca
+                contactController.getContacts()
+                sendMessageDelayed(obtainMessage().apply { what = GET_CONTACTS_MSG }, GET_CONTACTS_INTERVAL)
+            } else{
+                msg.data.getParcelableArray(CONTACT_ARRAY)?.also { contactArray ->
+                    contactList.clear()
+                    contactArray.forEach {
+                        contactList.add(it as Contact)
+                    }
+                    contactAdapter.notifyDataSetChanged()
                 }
-                contactAdapter.notifyDataSetChanged()
             }
         }
-
     }
 
     private lateinit var carl:ActivityResultLauncher<Intent>
@@ -119,10 +133,13 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
-
-
         registerForContextMenu(amb.contatosLv)
+        updateContactListHandler.apply {
+            sendMessageDelayed(
+                obtainMessage().apply { what = GET_CONTACTS_MSG },
+                GET_CONTACTS_INTERVAL
+            )
+        }
     }
 
     private fun performSearch(query: String) {
